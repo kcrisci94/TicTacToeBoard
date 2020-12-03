@@ -1,4 +1,5 @@
 #include "TicTacToeBoard.h"
+#include <iostream>
 /**
  * Class for representing a 3x3 Tic-Tac-Toe game board, using the Piece enum
  * to represent the spaces on the board.
@@ -19,7 +20,15 @@ TicTacToeBoard::TicTacToeBoard()
 **/
 Piece TicTacToeBoard::toggleTurn()
 {
-  return Invalid;
+  
+  if(turn == X){
+    turn = O;
+    return turn;
+  }else{
+    turn = X;
+    return turn;
+  }
+  
 }
 
 /**
@@ -33,7 +42,17 @@ Piece TicTacToeBoard::toggleTurn()
 **/ 
 Piece TicTacToeBoard::placePiece(int row, int column)
 {
-  return Invalid;
+  if(row < 1 || row > BOARDSIZE || column < 1 || column > BOARDSIZE){
+     return Invalid;
+  }else if(board[row-1][column-1] == Blank && turn != Invalid){
+     board[row-1][column-1] = turn;
+     if(toggleTurn() == O){
+        return X;
+     }
+     return O;
+  }else{
+     return board[row-1][column-1];
+  }
 }
 
 /**
@@ -42,7 +61,10 @@ Piece TicTacToeBoard::placePiece(int row, int column)
 **/
 Piece TicTacToeBoard::getPiece(int row, int column)
 {
-  return Invalid;
+  if(row < 1 || row > BOARDSIZE || column < 1 || column > BOARDSIZE){
+     return Invalid;
+  }
+  return board[row-1][column-1];
 }
 
 /**
@@ -51,5 +73,75 @@ Piece TicTacToeBoard::getPiece(int row, int column)
 **/
 Piece TicTacToeBoard::getWinner()
 {
-  return Invalid;
+  int x1, o1, x2, o2, blank = 0;
+   x1 = 0;
+   o1 = 0;
+   x2 = 0;
+   o2 = 0;
+
+  //check diagonals
+  for(int i = 0; i < BOARDSIZE; i++){
+     //check first diagonal
+     if(board[i][i] == X){
+        x1++;
+     }else if(board[i][i] == O){
+        o1++;
+     }else if(board[i][i] == Blank){
+        blank++;
+     }
+     //check opposite diagonal
+     if(board[i][BOARDSIZE - i - 1] == X){
+        x2++;
+     }else if(board[i][BOARDSIZE - i - 1] == O){
+        o2++;
+     }else if(board[i][BOARDSIZE - i - 1] == Blank){
+        blank++;
+     }
+     if(x1 == 3 || x2 == 3){
+       turn = Invalid;
+       return X;
+     }
+     if(o1 == 3 || o2 == 3){
+       turn = Invalid;
+       return O;
+     }
+  
+  }
+  //check rows
+  for(int i = 0; i < BOARDSIZE; i++){    //no winner yet if executing
+     x1 = 0;
+     o1 = 0;
+     x2 = 0;
+     o2 = 0;
+     for(int j = 0; j < BOARDSIZE; j++){
+        //Check rows
+        if(board[i][j] == X){
+           x1++;
+        }else if(board[i][j] == O){
+           o1++;
+        }else if(board[i][j] == Blank){
+           blank++;
+        }
+        //Check columns
+        if(board[j][i] == X){
+           x2++;
+        }else if(board[j][i] == O){
+           o2++;
+        }else if(board[j][i] == Blank){
+           blank++;
+        }
+        if(x1 == 3 || x2 == 3){
+          turn = Invalid;
+          return X;
+        }
+        if(o1 == 3 || o2 == 3){
+          turn = Invalid;
+          return O;
+        }
+     }
+  }
+  if(blank == 0){      //if executing, no winner
+     return Blank;  //game still going
+  }
+  return Invalid;     //cat's game
 }
